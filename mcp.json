@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "bigsearch": {
+      "command": "npx",
+      "args": ["-y", "@bigsearch/mcp"],
+      "env": {
+        "BIGSEARCH_API_KEY": "${env:BIGSEARCH_API_KEY}",
+        "BIGSEARCH_API_URL": "${env:BIGSEARCH_API_URL}"
+      }
+    }
+  }
+}

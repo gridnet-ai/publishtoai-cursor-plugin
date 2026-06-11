@@ -1,0 +1,21 @@
+{
+  "name": "bigsearch-cursor-plugin",
+  "private": true,
+  "description": "BigSearch AI CLI, MCP server, and Cursor plugin",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gridnet-ai/bigsearch-cursor-plugin.git"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "build:cli": "npm run build -w @bigsearch/cli",
+    "build:mcp": "npm run build -w @bigsearch/mcp"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
