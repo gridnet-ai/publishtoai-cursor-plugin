@@ -12,7 +12,7 @@ import {
   remoteValidate,
   verifyApiKey,
 } from './api.js';
-import { exitMissingApiKey, requireApiKey } from './config.js';
+import { ensureAuthenticated, runDeviceLogin } from './login.js';
 import { discoverWeb4PageFiles } from './discover.js';
 import { die, hint, printPublishError, printPublishSuccess, printValidateResult } from './output.js';
 import { localValidate, readWeb4PageFile, slugFromPage } from './validate-local.js';
@@ -54,7 +54,8 @@ function writeInitScaffold(): void {
   hint('\nNext steps:');
   hint('  1. Fill in your entity details');
   hint('  2. Run: bigsearch validate');
-  hint('  3. Set BIGSEARCH_API_KEY and run: bigsearch publish');
+  hint('  3. Run: bigsearch login');
+  hint('     Or: bigsearch publish (login runs automatically)');
 }
 
 async function runValidate(file: string, remote: boolean): Promise<void> {
@@ -86,8 +87,7 @@ async function runValidate(file: string, remote: boolean): Promise<void> {
 }
 
 async function runPublish(file: string): Promise<void> {
-  const apiKey = requireApiKey();
-  if (!apiKey) exitMissingApiKey();
+  const apiKey = await ensureAuthenticated();
 
   let page: unknown;
   try {
@@ -114,8 +114,7 @@ async function runPublish(file: string): Promise<void> {
 }
 
 async function runPublishAll(): Promise<void> {
-  const apiKey = requireApiKey();
-  if (!apiKey) exitMissingApiKey();
+  const apiKey = await ensureAuthenticated();
 
   const files = discoverWeb4PageFiles();
   if (files.length === 0) die('No web4page.json files found. Run `bigsearch init` first.');
@@ -192,8 +191,7 @@ async function runCheck(opts: { slug?: string; url?: string }): Promise<void> {
 }
 
 async function runVerify(file: string): Promise<void> {
-  const apiKey = requireApiKey();
-  if (!apiKey) exitMissingApiKey();
+  const apiKey = await ensureAuthenticated();
 
   let page: unknown;
   try {
@@ -252,9 +250,21 @@ async function runVerify(file: string): Promise<void> {
 program
   .name('bigsearch')
   .description('BigSearch AI — publish your business to the IRL index')
-  .version('1.0.0');
+  .version('1.1.0');
 
 program.command('init').description('Scaffold web4page.json in the current directory').action(writeInitScaffold);
+
+program
+  .command('login')
+  .description('Sign in via browser and save API key to ~/.bigsearch/config.json')
+  .action(async () => {
+    try {
+      await runDeviceLogin();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      die(msg);
+    }
+  });
 
 program
   .command('validate')

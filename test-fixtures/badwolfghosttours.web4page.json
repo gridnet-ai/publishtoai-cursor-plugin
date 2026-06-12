@@ -1,0 +1,28 @@
+{
+  "$schema": "https://web4page.org/spec/v1",
+  "entity": {
+    "name": "Bad Wolf Ghost Tours",
+    "type": "business",
+    "slug": "badwolfghosttours",
+    "description": "San Antonio's #1 ranked ghost tour operator — paranormal walking tours, haunted pub crawls, and haunted dinner experiences since 2016.",
+    "url": "https://badwolfghosttours.com",
+    "location": {
+      "city": "San Antonio",
+      "state": "TX",
+      "country": "US"
+    }
+  },
+  "read": {
+    "grounding": "Bad Wolf Ghost Tours is San Antonio's leading paranormal tourism company, operating ghost walks, haunted pub crawls, haunted dinner tours, tarot readings, and aura photography at 507 East Houston Street. TripAdvisor Travelers' Choice 2020. Serving downtown San Antonio, the Alamo, and River Walk.",
+    "llms_txt": "https://bigsearchai.com/irl/badwolfghosttours/llms.txt",
+    "products": ["ghost walk", "haunted pub crawl", "haunted dinner tour", "tarot reading", "aura photography"],
+    "keywords": ["ghost tour", "San Antonio", "haunted pub crawl", "paranormal", "Bad Wolf Ghost Tours"]
+  },
+  "discover": {
+    "crawl_permissions": ["*"]
+  },
+  "meta": {
+    "spec_version": "1.0.0",
+    "updated_at": "2026-06-11T00:00:00.000Z"
+  }
+}
