@@ -1,6 +1,15 @@
 import { irlApiUrl, requireApiKey } from './config.js';
 import type { ValidateResult } from './validate-local.js';
 
+export type VerifyDomainResponse = {
+  verified?: boolean;
+  trustTier?: string;
+  reason?: string;
+  message?: string;
+  error?: string;
+  irlUrl?: string;
+};
+
 export type PublishResponse = {
   indexed?: boolean;
   url?: string;
@@ -9,6 +18,17 @@ export type PublishResponse = {
   slug?: string;
   pageId?: string;
   vcap?: Record<string, boolean>;
+  searchUrl?: string;
+  surfaces?: {
+    llmsTxt?: string;
+    mcpJson?: string;
+    openapiJson?: string;
+  };
+  visibility?: {
+    bigSearchEligible?: boolean;
+    indexNow?: string;
+    googleIndexing?: string;
+  };
   error?: string;
   details?: unknown;
   suggestions?: string[];
@@ -90,6 +110,22 @@ export async function checkReadiness(
   if (query.url) params.set('url', query.url);
   const res = await fetch(`${irlApiUrl('/check')}?${params.toString()}`);
   return { status: res.status, data: await parseJson<CheckResponse>(res) };
+}
+
+export async function verifyDomain(
+  slug: string,
+  domain: string,
+  apiKey: string,
+): Promise<{ status: number; data: VerifyDomainResponse }> {
+  const res = await fetch(irlApiUrl('/verify'), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+    },
+    body: JSON.stringify({ slug, domain }),
+  });
+  return { status: res.status, data: await parseJson<VerifyDomainResponse>(res) };
 }
 
 /** Side-effect-free API key check: invalid body → 400 means key accepted. */

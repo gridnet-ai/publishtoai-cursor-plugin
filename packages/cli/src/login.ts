@@ -14,6 +14,7 @@ type DeviceResponse = {
 
 type TokenResponse = {
   api_key?: string;
+  reused?: boolean;
   error?: string;
 };
 
@@ -59,7 +60,7 @@ export async function runDeviceLogin(): Promise<string> {
 
   const spinner = ora('Waiting for authorization…').start();
   const deadline = Date.now() + device.expires_in * 1000;
-  const intervalMs = Math.max(1000, (device.interval ?? 3) * 1000);
+  const intervalMs = Math.max(1000, Math.min(2000, (device.interval ?? 3) * 1000));
 
   while (Date.now() < deadline) {
     await new Promise((r) => setTimeout(r, intervalMs));
@@ -71,6 +72,15 @@ export async function runDeviceLogin(): Promise<string> {
     });
 
     const token = await parseJson<TokenResponse>(tokenRes);
+    if (token.reused) {
+      const existing = requireApiKey();
+      if (existing) {
+        spinner.succeed('Authorized — using existing ~/.bigsearch/config.json key');
+        return existing;
+      }
+      spinner.fail('Session approved but no local API key found');
+      throw new Error('Run bigsearch login after saving a key, or revoke old CLI keys and retry.');
+    }
     if (token.api_key) {
       saveConfigFile({ apiKey: token.api_key });
       spinner.succeed('Authorized — API key saved to ~/.bigsearch/config.json');

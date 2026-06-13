@@ -25,6 +25,17 @@ export function printPublishSuccess(data: {
   irlUrl?: string;
   entityScore?: number;
   slug?: string;
+  searchUrl?: string;
+  surfaces?: {
+    llmsTxt?: string;
+    mcpJson?: string;
+    openapiJson?: string;
+  };
+  visibility?: {
+    bigSearchEligible?: boolean;
+    indexNow?: string;
+    googleIndexing?: string;
+  };
 }): void {
   console.log(chalk.green('✓ Published to BigSearch AI'));
   console.log(chalk.bold('\n  indexed:     true'));
@@ -34,7 +45,30 @@ export function printPublishSuccess(data: {
   if (typeof data.entityScore === 'number') {
     console.log(chalk.bold(`  entityScore: ${data.entityScore}/100`));
   }
-  console.log(chalk.gray('\n  Your IRL is indexed for AI search and citation.'));
+
+  const slug = data.slug ?? '';
+  if (data.surfaces?.llmsTxt || data.irlUrl) {
+    console.log(chalk.gray('\nSurfaces now crawlable:'));
+    const base = data.irlUrl ?? (slug ? `https://bigsearchai.com/irl/${slug}` : '');
+    if (data.surfaces?.llmsTxt) hint(`  ${data.surfaces.llmsTxt}`);
+    else if (base) hint(`  ${base}/llms.txt`);
+    if (data.surfaces?.mcpJson) hint(`  ${data.surfaces.mcpJson}`);
+    else if (base) hint(`  ${base}/mcp.json`);
+    if (data.surfaces?.openapiJson) hint(`  ${data.surfaces.openapiJson}`);
+    else if (base) hint(`  ${base}/openapi.json`);
+  }
+
+  console.log(chalk.gray('\nDiscovery (tier-dependent, async):'));
+  hint('  → businessPageSearchIndex (Big Search eligibility — immediate)');
+  hint('  → sitemap-merchants.xml (immediate)');
+  if (data.visibility?.indexNow) hint(`  → IndexNow: ${data.visibility.indexNow}`);
+  else hint('  → IndexNow (Air+ tier, ~minutes)');
+  if (data.visibility?.googleIndexing) hint(`  → Google Indexing: ${data.visibility.googleIndexing}`);
+  else hint('  → Google Indexing API (Pro+ tier, ~hours)');
+
+  if (data.searchUrl) {
+    console.log(chalk.bold(`\nSearch now: ${data.searchUrl}`));
+  }
 }
 
 export function printPublishError(status: number, data: { error?: string; details?: unknown; suggestions?: string[] }): never {
