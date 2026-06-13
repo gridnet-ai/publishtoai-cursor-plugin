@@ -16,6 +16,7 @@ import { ensureAuthenticated, runDeviceLogin } from './login.js';
 import { discoverWeb4PageFiles } from './discover.js';
 import { die, hint, printPublishError, printPublishSuccess, printValidateResult } from './output.js';
 import { localValidate, readWeb4PageFile, slugFromPage } from './validate-local.js';
+import { runVerifySecure } from './verify-domain.js';
 
 const DEFAULT_FILE = './web4page.json';
 
@@ -37,10 +38,11 @@ function writeInitScaffold(): void {
     },
     read: {
       grounding:
-        'Write 2-3 sentences here that explain who you are to an AI model. Be specific about what you do, where you are, and who you serve.',
+        'Write 2-3 sentences here that explain who you are to an AI model. Be specific about what you do, where you are, and who you serve. Include city, services, and what makes you distinct.',
       llms_txt: 'https://yourdomain.com/llms.txt',
       products: [],
-      keywords: [],
+      services: [],
+      keywords: ['your city', 'your industry', 'your service'],
     },
     discover: { crawl_permissions: ['*'] },
     meta: {
@@ -190,7 +192,7 @@ async function runCheck(opts: { slug?: string; url?: string }): Promise<void> {
   if (data.hint) hint(`\n  ${data.hint}`);
 }
 
-async function runVerify(file: string): Promise<void> {
+async function runDoctor(file: string): Promise<void> {
   const apiKey = await ensureAuthenticated();
 
   let page: unknown;
@@ -250,7 +252,7 @@ async function runVerify(file: string): Promise<void> {
 program
   .name('bigsearch')
   .description('BigSearch AI — publish your business to the IRL index')
-  .version('1.1.0');
+  .version('1.2.0');
 
 program.command('init').description('Scaffold web4page.json in the current directory').action(writeInitScaffold);
 
@@ -306,11 +308,29 @@ program
   });
 
 program
-  .command('verify')
-  .description('Verify API key, local file, and index status')
+  .command('doctor')
+  .description('Check API key, local file, and index / llms.txt readiness')
   .option('-f, --file <path>', 'Path to web4page.json', DEFAULT_FILE)
   .action(async (opts: { file: string }) => {
-    await runVerify(opts.file);
+    await runDoctor(opts.file);
+  });
+
+program
+  .command('verify')
+  .description('Verify domain ownership for IRL Secure (IRLS) via DNS TXT')
+  .option('-f, --file <path>', 'Path to web4page.json', DEFAULT_FILE)
+  .option('-d, --domain <host>', 'Domain to verify (default: entity.url host)')
+  .option('--show-dns', 'Print DNS TXT instructions only')
+  .option('--wait', 'Poll verify every 30s up to 10 attempts')
+  .action(async (opts: { file: string; domain?: string; showDns?: boolean; wait?: boolean }) => {
+    const apiKey = await ensureAuthenticated();
+    await runVerifySecure({
+      file: opts.file,
+      domain: opts.domain,
+      showDns: opts.showDns,
+      wait: opts.wait,
+      apiKey,
+    });
   });
 
 program.parse();
