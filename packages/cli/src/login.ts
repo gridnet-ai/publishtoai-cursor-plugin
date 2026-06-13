@@ -31,8 +31,13 @@ function openBrowser(url: string): void {
   spawn('xdg-open', [url], { detached: true, stdio: 'ignore' }).unref();
 }
 
-async function parseJson<T>(res: Response): Promise<T> {
-  return (await res.json()) as T;
+async function parseJsonSafe<T>(res: Response): Promise<T | null> {
+  const text = await res.text();
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return null;
+  }
 }
 
 export async function runDeviceLogin(): Promise<string> {
@@ -47,7 +52,10 @@ export async function runDeviceLogin(): Promise<string> {
     throw new Error(`Device auth failed (HTTP ${deviceRes.status})`);
   }
 
-  const device = await parseJson<DeviceResponse>(deviceRes);
+  const device = await parseJsonSafe<DeviceResponse>(deviceRes);
+  if (!device?.device_code) {
+    throw new Error(`Device auth failed (HTTP ${deviceRes.status})`);
+  }
   const verifyUrl = `${device.verification_uri}?code=${encodeURIComponent(device.user_code)}&source=cli`;
 
   console.log('');
@@ -71,7 +79,11 @@ export async function runDeviceLogin(): Promise<string> {
       body: JSON.stringify({ device_code: device.device_code }),
     });
 
-    const token = await parseJson<TokenResponse>(tokenRes);
+    const token = await parseJsonSafe<TokenResponse>(tokenRes);
+    if (!token) {
+      // Transient gateway/function errors — keep polling until deadline.
+      continue;
+    }
     if (token.reused) {
       const existing = requireApiKey();
       if (existing) {
