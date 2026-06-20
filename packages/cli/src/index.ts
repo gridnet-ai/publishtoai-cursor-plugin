@@ -167,8 +167,14 @@ async function runStatus(slug: string): Promise<void> {
   console.log(chalk.green(`✓ ${data.name ?? slug}`));
   hint(`  slug:        ${data.slug ?? slug}`);
   hint(`  indexed:     ${String(data.indexed ?? false)}`);
-  hint(`  url:         ${data.url ?? '—'}`);
-  hint(`  irlUrl:      ${data.irlUrl ?? '—'}`);
+  if (data.irlUrl) {
+    hint(`  irlUrl:      ${data.irlUrl}`);
+    hint('               Web 4.0 page (machine-readable entity record)');
+  }
+  if (data.url) {
+    hint(`  url:         ${data.url}`);
+    hint('               Traditional Web page (human-readable AI directory listing)');
+  }
   if (typeof data.entityScore === 'number') hint(`  entityScore: ${data.entityScore}/100`);
   if (data.surfaces?.llmsTxt) hint(`  llms.txt:    ${data.surfaces.llmsTxt}`);
   if (data.surfaces?.mcpJson) hint(`  mcp.json:    ${data.surfaces.mcpJson}`);

@@ -1,18 +1,18 @@
 ---
 name: bigsearch-irl
 description: >-
-  Publish a business to BigSearch AI with full VCAP surfaces (Web 4.0 page, IRL,
-  llms.txt, mcp.json, openapi.json). Use when the user wants AI discoverability,
-  bigsearch publish, web4page.json, or IRL indexing. Always API-key-first; device
-  login is local-terminal fallback only.
+  Publish a business to BigSearch AI with full VCAP surfaces (Web 4.0 IRL page,
+  Traditional Web directory listing, llms.txt, mcp.json, openapi.json). Use when
+  the user wants AI discoverability, bigsearch publish, web4page.json, or IRL
+  indexing. Always API-key-first; device login is local-terminal fallback only.
 ---
 
 # BigSearch IRL — Publish to AI Search
 
 Publish a business to **BigSearch AI** (`bigsearchai.com`) with complete **VCAP** surfaces so ChatGPT, Claude, Gemini, Perplexity, and Big Search multi-model search can discover and cite the entity.
 
-**Canonical repo:** [gridnet-ai/bigsearch-cursor-plugin](https://github.com/gridnet-ai/bigsearch-cursor-plugin)  
-**Live pricing (fetch before quoting tiers):** [bigsearchai.com/pricing](https://bigsearchai.com/pricing)  
+**Canonical repo:** [gridnet-ai/bigsearch-cursor-plugin](https://github.com/gridnet-ai/bigsearch-cursor-plugin) 
+**Live pricing (fetch before quoting tiers):** [bigsearchai.com/pricing](https://bigsearchai.com/pricing) 
 **Optional flow doc:** [CLI device login & publish](https://bigsearchai.com/docs/cli-device-login-and-publish-flow)
 
 ---
@@ -37,7 +37,7 @@ flowchart TB
   M -->|Yes| N[bigsearch verify --show-dns]
   M -->|No| O[Explain outcomes to owner]
   N --> O
-  O --> P([Done — /b/slug + /irl/slug discoverable])
+  O --> P([Done — Web 4.0 /irl/slug + Traditional Web /b/slug discoverable])
 ```
 
 ---
@@ -46,15 +46,15 @@ flowchart TB
 
 | Surface | What | URLs |
 |---------|------|------|
-| **V** Visibility | Human Web 4.0 page + machine IRL HTML with JSON-LD | `/b/{slug}`, `/irl/{slug}` |
+| **V** Visibility | Web 4.0 IRL (machine-readable entity) + Traditional Web directory listing | `/irl/{slug}`, `/b/{slug}` |
 | **C** Citability | Model grounding brief | `/irl/{slug}/llms.txt` |
 | **A** Actionability | MCP tool discovery | `/irl/{slug}/mcp.json` |
 | **P** Performability | OpenAPI + merchant read API | `/irl/{slug}/openapi.json`, `/api/v1/merchants/{slug}` |
 
 Full URLs (replace `{slug}`):
 
-- `https://bigsearchai.com/b/{slug}`
-- `https://bigsearchai.com/irl/{slug}`
+- `https://bigsearchai.com/irl/{slug}` — **Web 4.0 page** (machine-readable entity record)
+- `https://bigsearchai.com/b/{slug}` — **Traditional Web page** (human-readable AI directory listing)
 - `https://bigsearchai.com/irl/{slug}/llms.txt`
 - `https://bigsearchai.com/irl/{slug}/mcp.json`
 - `https://bigsearchai.com/irl/{slug}/openapi.json`
@@ -147,10 +147,11 @@ Sign in, authorize, copy the API key shown in the browser if needed, then retry 
 
 ### 7. Confirm publish output
 
-CLI should report:
+CLI/API should report:
 
-- `url` (Web 4.0): `https://bigsearchai.com/b/{slug}`
-- `irlUrl`: `https://bigsearchai.com/irl/{slug}`
+- `irlUrl` (Web 4.0 page): `https://bigsearchai.com/irl/{slug}`
+- `url` (Traditional Web page): `https://bigsearchai.com/b/{slug}`
+- `surfaceNarrative.liveRightNow` — canonical owner-facing copy (prefer this)
 - `vcapUrls` — all four V/C/A/P URLs
 - `vcapComplete` — `true` when publish gate passed
 - `merchantApi` — base URL for Performability read API
@@ -159,8 +160,8 @@ CLI should report:
 ### 8. Verify VCAP (all must return HTTP 200)
 
 ```bash
-curl -I "https://bigsearchai.com/b/{slug}"
 curl -I "https://bigsearchai.com/irl/{slug}"
+curl -I "https://bigsearchai.com/b/{slug}"
 curl -I "https://bigsearchai.com/irl/{slug}/llms.txt"
 curl -I "https://bigsearchai.com/irl/{slug}/mcp.json"
 curl -I "https://bigsearchai.com/irl/{slug}/openapi.json"
@@ -198,8 +199,8 @@ bigsearch verify
 | `bigsearch publish --all` | Publish every `web4page.json` in tree |
 | `bigsearch publish -f path` | Publish a specific file |
 | `bigsearch login` | Device login → saves key to `~/.bigsearch/config.json` |
-| `bigsearch status <slug>` | Index status |
-| `bigsearch check --slug <slug>` | Readiness check |
+| `bigsearch status ` | Index status |
+| `bigsearch check --slug ` | Readiness check |
 | `bigsearch verify` | Verify API key + file + index status |
 | `bigsearch verify --show-dns` | DNS instructions for IRL Secure |
 
@@ -218,14 +219,25 @@ bigsearch verify
 
 ### Immediate (seconds)
 
-- Web 4.0 page and IRL live at `/b/{slug}` and `/irl/{slug}`
-- `llms.txt`, `mcp.json`, `openapi.json` crawlable
-- Row in Big Search AI merchant index (eligible for bigsearchai.com/search results)
+Use **exactly** this block after publish (replace `{slug}`):
+
+```
+Live right now:
+
+Web 4.0 page: https://bigsearchai.com/irl/{slug} — the machine-readable entity record
+Traditional Web page: https://bigsearchai.com/b/{slug} — the human-readable AI directory listing
+llms.txt — grounding text for AI models (what they'll cite)
+mcp.json — tool discovery for AI agents
+openapi.json — merchant read API
+Merchant API — live data endpoint (https://bigsearchai.com/api/v1/merchants/{slug})
+```
+
+- Row in Big Search index (eligible for bigsearchai.com/search results)
 
 ### AI models (days–weeks)
 
 - Frontier models crawl `/irl/` and `llms.txt` for grounding
-- JSON-LD entity graph on `/b/` and `/irl/`
+- JSON-LD entity graph on `/irl/` (Web 4.0) and `/b/` (Traditional Web)
 - DNS-verify domain for higher IRL trust tier
 
 ### Traditional search (plan-dependent)

@@ -10,10 +10,25 @@ export type VerifyDomainResponse = {
   irlUrl?: string;
 };
 
+export type PublishSurfaceNarrative = {
+  liveRightNow?: string;
+  web4Page?: { url?: string; label?: string; description?: string };
+  traditionalWebPage?: { url?: string; label?: string; description?: string };
+  llmsTxt?: { url?: string; label?: string; description?: string };
+  mcpJson?: { url?: string; label?: string; description?: string };
+  openapiJson?: { url?: string; label?: string; description?: string };
+  merchantApi?: { url?: string; label?: string; description?: string };
+};
+
 export type PublishResponse = {
   indexed?: boolean;
   url?: string;
   irlUrl?: string;
+  urlLabel?: string;
+  urlDescription?: string;
+  irlUrlLabel?: string;
+  irlUrlDescription?: string;
+  surfaceNarrative?: PublishSurfaceNarrative;
   entityScore?: number;
   slug?: string;
   pageId?: string;
