@@ -1,5 +1,9 @@
 import chalk from 'chalk';
 import type { ValidateResult } from './validate-local.js';
+import {
+  buildLiveRightNowFallback,
+  type PublishSurfaceNarrative,
+} from './surfaceNarrative.js';
 
 export function printValidateResult(data: ValidateResult): void {
   if (!data.valid) {
@@ -26,6 +30,7 @@ export function printPublishSuccess(data: {
   entityScore?: number;
   slug?: string;
   searchUrl?: string;
+  surfaceNarrative?: PublishSurfaceNarrative;
   surfaces?: {
     llmsTxt?: string;
     mcpJson?: string;
@@ -40,11 +45,26 @@ export function printPublishSuccess(data: {
   console.log(chalk.green('✓ Published to BigSearch AI'));
   console.log(chalk.bold('\n  indexed:     true'));
   if (data.slug) console.log(chalk.bold(`  slug:        ${data.slug}`));
-  if (data.url) console.log(chalk.bold(`  url:         ${data.url}`));
-  if (data.irlUrl) console.log(chalk.bold(`  irlUrl:      ${data.irlUrl}`));
+  if (data.irlUrl) {
+    console.log(chalk.bold(`  irlUrl:      ${data.irlUrl}`));
+    console.log(chalk.gray('               Web 4.0 page (machine-readable entity record)'));
+  }
+  if (data.url) {
+    console.log(chalk.bold(`  url:         ${data.url}`));
+    console.log(chalk.gray('               Traditional Web page (human-readable AI directory listing)'));
+  }
   if (typeof data.entityScore === 'number') {
     console.log(chalk.bold(`  entityScore: ${data.entityScore}/100`));
   }
+
+  const liveBlock =
+    data.surfaceNarrative?.liveRightNow?.trim() ||
+    buildLiveRightNowFallback({
+      slug: data.slug,
+      irlUrl: data.irlUrl,
+      url: data.url,
+    });
+  console.log(chalk.bold(`\n${liveBlock}`));
 
   const slug = data.slug ?? '';
   if (data.surfaces?.llmsTxt || data.irlUrl) {
@@ -59,7 +79,7 @@ export function printPublishSuccess(data: {
   }
 
   console.log(chalk.gray('\nDiscovery (tier-dependent, async):'));
-  hint('  → businessPageSearchIndex (Big Search eligibility — immediate)');
+  hint('  → Big Search index (eligible for bigsearchai.com/search — immediate)');
   hint('  → sitemap-merchants.xml (immediate)');
   if (data.visibility?.indexNow) hint(`  → IndexNow: ${data.visibility.indexNow}`);
   else hint('  → IndexNow (Air+ tier, ~minutes)');

@@ -1,6 +1,6 @@
 {
   "name": "@bigsearch/cli",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Publish businesses to the BigSearch AI IRL index",
   "license": "MIT",
   "publishConfig": {
