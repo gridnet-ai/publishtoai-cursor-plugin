@@ -15,6 +15,9 @@ Publish a business to **BigSearch AI** (`bigsearchai.com`) with complete **VCAP*
 **Live pricing (fetch before quoting tiers):** [bigsearchai.com/pricing](https://bigsearchai.com/pricing) 
 **Optional flow doc:** [CLI device login & publish](https://bigsearchai.com/docs/cli-device-login-and-publish-flow)
 
+**Publish funnel (human step):** [bigsearchai.com/api](https://bigsearchai.com/api)  
+Append `?source=replit` on Replit, `?source=cursor` on Cursor, `?source=lovable` on Lovable.
+
 ---
 
 ## Flow (follow in order)
@@ -25,7 +28,7 @@ flowchart TB
   B --> C[bigsearch init]
   C --> D[Edit web4page.json]
   D --> E[bigsearch validate]
-  E --> F[Human: Generate API key at Account → Developer]
+  E --> F[Human: Start building at bigsearchai.com/api → API key in Developer tab]
   F --> G[Set BIGSEARCH_API_KEY]
   G --> H[bigsearch publish]
   H --> I{Publish OK?}
@@ -99,9 +102,14 @@ Fix schema errors before publish.
 
 **Before `bigsearch publish`**, obtain an API key:
 
-1. Ask the human to open [bigsearchai.com/account?tab=developer](https://bigsearchai.com/account?tab=developer)
-2. Click **Generate & copy key**
+1. Ask the human to open [bigsearchai.com/api](https://bigsearchai.com/api)  
+   - Replit: `https://bigsearchai.com/api?source=replit`  
+   - Cursor: `https://bigsearchai.com/api?source=cursor`  
+   - Lovable: `https://bigsearchai.com/api?source=lovable`
+2. They click **Start building**, sign up or sign in, then open **Account → Developer → Generate & copy key**
 3. Set environment variable `BIGSEARCH_API_KEY` (Replit secret, `.env`, or `export`)
+
+**Do NOT link the human straight to `/account?tab=developer`** — always use the `/api` landing page first.
 
 **Do NOT rely on device login in server/headless environments** — Replit and CI kill long-running CLI poll processes.
 
@@ -267,8 +275,8 @@ Set `BIGSEARCH_API_KEY` in Cursor MCP env before invoking tools.
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| Publish hangs then dies in Replit | Device login poll killed | Use API key from Account → Developer |
+| Publish hangs then dies in Replit | Device login poll killed | Use API key from [bigsearchai.com/api](https://bigsearchai.com/api) → Start building → Developer |
 | `/cli-auth` 503 on custom domain | CDN cold start | Use `bigsearch-fd03f.web.app/cli-auth` |
-| `No BIGSEARCH_API_KEY found` | Key not in env or config | Generate key at account developer tab |
+| `No BIGSEARCH_API_KEY found` | Key not in env or config | Open [bigsearchai.com/api](https://bigsearchai.com/api), Start building, then Developer tab |
 | `invalid_api_key` | Key revoked or wrong | Generate new key or re-run login |
 | `API key limit reached` | Plan limit | Revoke unused keys in Account → Developer |
