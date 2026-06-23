@@ -90,6 +90,8 @@ Edit `web4page.json` ([web4page.org spec](https://web4page.org/spec/v1)):
 - `read.keywords` — 8–12 relevant search terms
 - `read.products` — main offerings as short labels
 
+**Slug (`entity.slug`):** see [IRL slug rules](#irl-slug-rules-registry) below. Default from business name: spaces removed, no auto-hyphens (`Good Cookie` → `goodcookie`). Hyphens only when the owner intentionally chooses them (`good-cookie` ≠ `goodcookie`).
+
 ### 3. Validate locally
 
 ```bash
@@ -175,6 +177,27 @@ curl -I "https://bigsearchai.com/irl/{slug}/mcp.json"
 curl -I "https://bigsearchai.com/irl/{slug}/openapi.json"
 curl -I "https://bigsearchai.com/api/v1/merchants/{slug}"
 ```
+
+---
+
+## IRL slug rules (registry)
+
+**Hyphens are meaningful. Spaces are not.** Same as domains: `goodcookie` and `good-cookie` are different IRLs and may be owned by different parties.
+
+| Owner input | `entity.slug` |
+|-------------|----------------|
+| Business name `Good Cookie` | `goodcookie` (default suggestion — spaces removed) |
+| Explicit `good-cookie` | `good-cookie` (hyphen preserved) |
+| Explicit `goodcookie` | `goodcookie` |
+
+- Do **not** auto-insert hyphens when deriving a slug from a business name.
+- Do **not** treat `goodcookie` and `good-cookie` as the same slug.
+- Slug check (exact match): `GET https://bigsearchai.com/api/checkIrlSlug?slug=` or `bigsearch check --slug `
+- Registry search may show related forms; **publish claims one slug at a time.**
+
+Allowed characters: lowercase letters, digits, hyphens (`^[a-z0-9-]+$` per [web4page spec](https://web4page.org/spec/v1)).
+
+Normative detail: [bigsearch irl-slug-registry-rules](https://github.com/gridnet-ai/bigsearch/blob/main/docs/irl-slug-registry-rules.md)
 
 ### 9. Optional trust upgrade
 
