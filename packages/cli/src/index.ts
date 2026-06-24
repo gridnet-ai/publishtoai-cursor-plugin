@@ -31,7 +31,7 @@ function writeInitScaffold(): void {
     entity: {
       name: 'Your Business Name',
       type: 'business',
-      slug: 'your-business-slug',
+      slug: 'goodcookie',
       description: 'One sentence description of your entity.',
       url: 'https://yourdomain.com',
       location: { city: '', state: '', country: 'US' },
@@ -54,7 +54,7 @@ function writeInitScaffold(): void {
   fs.writeFileSync(target, `${JSON.stringify(scaffold, null, 2)}\n`);
   console.log(chalk.green('✓ Created web4page.json'));
   hint('\nNext steps:');
-  hint('  1. Fill in your entity details');
+  hint('  1. Fill in entity details — slug: compact from name (Good Cookie → goodcookie); hyphens only if intentional');
   hint('  2. Run: bigsearch validate');
   hint('  3. Run: bigsearch login');
   hint('     Or: bigsearch publish (login runs automatically)');
