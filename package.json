@@ -11,8 +11,9 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "build:cli": "npm run build -w @bigsearch/cli",
+    "build": "npm run build -w @bigsearch/web4page-spec && npm run build -w @bigsearch/cli && npm run build -w @bigsearch/mcp",
+    "build:spec": "npm run build -w @bigsearch/web4page-spec",
+    "build:cli": "npm run build -w @bigsearch/web4page-spec && npm run build -w @bigsearch/cli",
     "build:mcp": "npm run build -w @bigsearch/mcp"
   },
   "engines": {

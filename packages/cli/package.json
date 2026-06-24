@@ -1,6 +1,6 @@
 {
   "name": "@bigsearch/cli",
-  "version": "1.2.3",
+  "version": "1.2.7",
   "description": "Publish businesses to the BigSearch AI IRL index",
   "license": "MIT",
   "publishConfig": {
@@ -17,13 +17,27 @@
   "bin": {
     "bigsearch": "dist/index.js"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./web4page-spec": {
+      "types": "./dist/web4page-spec/index.d.ts",
+      "import": "./dist/web4page-spec/index.js",
+      "require": "./dist/web4page-spec/index.js",
+      "default": "./dist/web4page-spec/index.js"
+    },
+    "./web4page-spec/schema.json": "./dist/web4page-spec-schema.json"
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "node scripts/copy-spec.cjs && tsc",
     "dev": "tsx src/index.ts",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@web4page/spec": "^1.0.0",
     "chalk": "^5.3.0",
     "commander": "^12.0.0",
     "ora": "^8.0.0",
@@ -42,6 +56,7 @@
     "ai-search",
     "irl",
     "cli",
-    "indexing"
+    "indexing",
+    "web4page"
   ]
 }

@@ -28,7 +28,7 @@ Auth uses **`BIGSEARCH_API_KEY` only** (no OAuth, no config-file secrets).
 | Command | Description |
 |---------|-------------|
 | `bigsearch init` | Scaffold `web4page.json` in the current directory |
-| `bigsearch validate` | Validate locally against `@web4page/spec` (default) |
+| `bigsearch validate` | Validate locally against `@bigsearch/cli/web4page-spec` (default) |
 | `bigsearch validate --remote` | Validate via BigSearch API |
 | `bigsearch publish` | Publish `./web4page.json` to the IRL index |
 | `bigsearch publish --all` | Publish every `web4page.json` in the project tree |

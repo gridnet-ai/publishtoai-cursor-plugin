@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://web4page.org/spec/v1/schema.json",
+  "title": "Web4Page",
+  "description": "Web4 Page open specification v1 — a new AI-native webpage enabling human-to-agent and agent-to-agent interactions.",
+  "type": "object",
+  "required": ["$schema", "entity", "read"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://web4page.org/spec/v1"
+    },
+    "entity": {
+      "type": "object",
+      "required": ["name", "type", "slug"],
+      "properties": {
+        "name":        { "type": "string", "description": "Legal or display name of the entity" },
+        "type":        { "type": "string", "enum": ["business", "institution", "person", "organization", "research"] },
+        "slug":        { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "URL-safe unique identifier" },
+        "description": { "type": "string" },
+        "url":         { "type": "string", "format": "uri" },
+        "logo":        { "type": "string", "format": "uri" },
+        "founded":     { "type": "string" },
+        "location":    {
+          "type": "object",
+          "properties": {
+            "city":    { "type": "string" },
+            "state":   { "type": "string" },
+            "country": { "type": "string" },
+            "zip":     { "type": "string" }
+          }
+        }
+      }
+    },
+    "read": {
+      "description": "Step 1 — READ: AI understands who you are",
+      "type": "object",
+      "properties": {
+        "grounding":   { "type": "string", "description": "Plain-language description for AI grounding (llms.txt content)" },
+        "llms_txt":    { "type": "string", "format": "uri", "description": "URL to llms.txt file on your domain" },
+        "products": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "required": ["title"],
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "price": { "type": "string" },
+                  "imageUrl": { "type": "string", "format": "uri" },
+                  "offerImageUrl": { "type": "string", "format": "uri" }
+                }
+              }
+            ]
+          }
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "required": ["title"],
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "price": { "type": "string" },
+                  "imageUrl": { "type": "string", "format": "uri" },
+                  "offerImageUrl": { "type": "string", "format": "uri" }
+                }
+              }
+            ]
+          }
+        },
+        "keywords":    { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "media": {
+      "description": "Human-visible page media for styled publish surfaces",
+      "type": "object",
+      "properties": {
+        "logoUrl": { "type": "string", "format": "uri" },
+        "logoImageUrl": { "type": "string", "format": "uri" },
+        "coverUrl": { "type": "string", "format": "uri" },
+        "coverImageUrl": { "type": "string", "format": "uri" },
+        "galleryImageUrls": {
+          "type": "array",
+          "maxItems": 12,
+          "items": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "discover": {
+      "description": "Step 2 — DISCOVER: AI can find and cite you",
+      "type": "object",
+      "properties": {
+        "json_ld": {
+          "type": "object",
+          "description": "Schema.org JSON-LD structured data — auto-generated from entity + read fields"
+        },
+        "entity_score": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Entity trust score 0-100 — calculated by registry on index"
+        },
+        "crawl_permissions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["*"],
+          "description": "Which AI models may crawl this page. Use * for all."
+        }
+      }
+    },
+    "write": {
+      "description": "Step 3 — WRITE: AI can transact with you (paid tier)",
+      "type": "object",
+      "properties": {
+        "openapi_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to OpenAPI spec (JSON or YAML)"
+        },
+        "actions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Human-readable list of available actions e.g. book_appointment, place_order"
+        },
+        "compliance": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Compliance frameworks declared e.g. CFPB, UDAAP, HIPAA"
+        }
+      }
+    },
+    "act": {
+      "description": "Step 4 — ACT: AI agents operate with you in real time (enterprise)",
+      "type": "object",
+      "properties": {
+        "mcp_endpoint": {
+          "type": "string",
+          "format": "uri",
+          "description": "MCP server endpoint for agentic real-time operation"
+        },
+        "agent_capabilities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of agent-accessible capabilities"
+        },
+        "auth": {
+          "type": "string",
+          "enum": ["none", "api_key", "oauth2", "did"],
+          "description": "Authentication method for agent access"
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "created_at":    { "type": "string", "format": "date-time" },
+        "updated_at":    { "type": "string", "format": "date-time" },
+        "spec_version":  { "type": "string", "const": "1.0.0" },
+        "published_by":  { "type": "string", "description": "Publisher slug or DID" },
+        "parent_slug":   { "type": "string", "description": "Parent IRL slug for child pages" }
+      }
+    }
+  }
+}

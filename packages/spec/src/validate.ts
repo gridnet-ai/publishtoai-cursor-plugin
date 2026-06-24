@@ -1,13 +1,10 @@
-/**
- * BigSearch publish schema — kept in sync with bigsearch/functions/src/lib/web4pageSpec/validate.ts
- * until @web4page/spec npm package ships media + offerImageUrl (v1.1+).
- */
 import { z } from 'zod';
 
 const httpUrl = z.string().url().refine((u) => /^https?:\/\//i.test(u), {
   message: 'Must be http(s) URL',
 });
 
+/** Single product/service line — string label or rich object with image. */
 export const Web4OfferLineSchema = z.union([
   z.string().min(1).max(200),
   z.object({
@@ -15,9 +12,12 @@ export const Web4OfferLineSchema = z.union([
     description: z.string().max(2000).optional(),
     price: z.string().max(80).optional(),
     imageUrl: httpUrl.optional(),
+    /** Alias for imageUrl in agent-facing publish payloads. */
     offerImageUrl: httpUrl.optional(),
   }),
 ]);
+
+export type Web4OfferLine = z.infer<typeof Web4OfferLineSchema>;
 
 export const Web4PageMediaSchema = z.object({
   logoUrl: httpUrl.optional(),
@@ -26,6 +26,8 @@ export const Web4PageMediaSchema = z.object({
   coverImageUrl: httpUrl.optional(),
   galleryImageUrls: z.array(httpUrl).max(12).optional(),
 });
+
+export type Web4PageMedia = z.infer<typeof Web4PageMediaSchema>;
 
 export const EntitySchema = z.object({
   name: z.string().min(1),
@@ -53,6 +55,7 @@ export const Web4PageSchema = z.object({
     services: z.array(Web4OfferLineSchema).optional(),
     keywords: z.array(z.string()).optional(),
   }),
+  /** Human-visible page media — maps to merchant identity + offer images. */
   media: Web4PageMediaSchema.optional(),
   discover: z
     .object({
@@ -88,32 +91,44 @@ export const Web4PageSchema = z.object({
 
 export type Web4Page = z.infer<typeof Web4PageSchema>;
 
+export const TYPE_PREFIX: Record<Web4Page['entity']['type'], string> = {
+  business: 'b',
+  institution: 'i',
+  person: 'p',
+  organization: 'o',
+  research: 'r',
+};
+
+export type VcapSurfaceKey = 'visibility' | 'citability' | 'actionability' | 'performability';
+
+/** Legacy read/discover/write/act keys mapped to RFC-0001 V/C/A/P. */
+export const VCAP_LEGACY_KEYS = {
+  visibility: 'read',
+  citability: 'discover',
+  actionability: 'act',
+  performability: 'write',
+} as const;
+
+export function getVcapSurfaces(page: Web4Page): Record<VcapSurfaceKey, boolean> {
+  return {
+    visibility: page.read.grounding.length >= 10,
+    citability: page.read.grounding.length >= 10,
+    actionability: !!page.act?.mcp_endpoint,
+    performability: !!page.write?.openapi_url,
+  };
+}
+
 export function getVcap(page: Web4Page): {
   read: boolean;
   discover: boolean;
   write: boolean;
   act: boolean;
 } {
+  const surfaces = getVcapSurfaces(page);
   return {
-    read: page.read.grounding.length >= 10,
-    discover: page.read.grounding.length >= 10,
-    write: !!page.write?.openapi_url,
-    act: !!page.act?.mcp_endpoint,
+    read: surfaces.visibility,
+    discover: surfaces.citability,
+    write: surfaces.performability,
+    act: surfaces.actionability,
   };
-}
-
-/** Entity trust score 0–100 (matches @web4page/spec v1 heuristic). */
-export function calculateEntityScore(page: Web4Page): number {
-  let score = 0;
-  if (page.read.grounding.length > 100) score += 20;
-  if (page.read.grounding.length > 300) score += 10;
-  if (page.read.llms_txt) score += 5;
-  if ((page.read.products?.length ?? 0) > 0) score += 5;
-  if (page.discover?.json_ld) score += 15;
-  if (page.entity.url) score += 5;
-  if (page.entity.location) score += 5;
-  if (page.write?.openapi_url) score += 15;
-  if ((page.write?.compliance?.length ?? 0) > 0) score += 5;
-  if (page.act?.mcp_endpoint) score += 15;
-  return Math.min(score, 100);
 }

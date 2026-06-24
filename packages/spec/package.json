@@ -1,0 +1,46 @@
+{
+  "private": true,
+  "name": "@bigsearch/web4page-spec",
+  "version": "1.0.0",
+  "description": "Web4 Page schema — Zod validation, JSON Schema, and entity scoring for BigSearch publish",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gridnet-ai/bigsearch-cursor-plugin.git",
+    "directory": "packages/spec"
+  },
+  "files": ["dist", "schema.json"],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./schema.json": "./schema.json"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "keywords": [
+    "bigsearch",
+    "web4page",
+    "irl",
+    "schema",
+    "zod"
+  ]
+}
