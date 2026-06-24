@@ -26,7 +26,7 @@ Append `?source=replit` on Replit, `?source=cursor` on Cursor, `?source=lovable`
 flowchart TB
   A([Business website + brief]) --> B[Install @bigsearch/cli]
   B --> C[bigsearch init]
-  C --> D[Edit web4page.json]
+  C --> D[Edit web4page.json — entity, grounding, media, offerImageUrl]
   D --> E[bigsearch validate]
   E --> F[Human: Start building at bigsearchai.com/api → API key in Developer tab]
   F --> G[Set BIGSEARCH_API_KEY]
@@ -88,7 +88,8 @@ Edit `web4page.json` ([web4page.org spec](https://web4page.org/spec/v1)):
 - `entity.location` — city/region if local business
 - `read.grounding` — 2–3 sentences written for AI models (specific, not generic)
 - `read.keywords` — 8–12 relevant search terms
-- `read.products` — main offerings as short labels
+- `read.products` / `read.services` — offerings (see **Media & offer images** below)
+- `media` — hero, logo, gallery URLs (absolute `https://`; required for a styled page with images)
 
 ### 3. Validate locally
 
@@ -97,6 +98,115 @@ bigsearch validate
 ```
 
 Fix schema errors before publish.
+
+### Media & offer images (styled `/irl/{slug}` page)
+
+Publishing **text-only** `web4page.json` produces a live IRL, but the human Web 4.0 page (`https://bigsearchai.com/irl/{slug}`) will have **no cover, gallery, or offer photos**. The React renderer is already wired — you must supply image URLs in the publish payload.
+
+**Where images come from:** Scrape or upload from the business website (hero, logo, product photos). Use absolute `https://` URLs the browser can load (same origin, CDN, or Firebase Storage after upload). Do not use relative paths.
+
+#### `media` block (page-level)
+
+| Field | Maps to | Notes |
+|-------|---------|--------|
+| `coverImageUrl` | `identity.coverUrl` | Hero / banner — **most important** |
+| `coverUrl` | same | Alias for `coverImageUrl` |
+| `logoImageUrl` | `identity.logoUrl` | Square or wordmark |
+| `logoUrl` | same | Alias for `logoImageUrl` |
+| `galleryImageUrls` | `identity.galleryImageUrls` | Array, max 12 |
+
+#### `read.products` / `read.services` (per-offer)
+
+Each line may be:
+
+- **String** — title only (legacy; no image on first publish)
+- **Object** — `title`, optional `description`, `price`, and **`offerImageUrl`** (preferred) or `imageUrl` (alias)
+
+| Field | Maps to |
+|-------|---------|
+| `offerImageUrl` / `imageUrl` | `offers[].imageUrl` + `imageUrls[]` |
+
+#### Republish safety
+
+If you republish with **string-only** product/service lines (title labels only), BigSearch **preserves existing offer images** when the title matches a prior publish. Use this when rescanning copy without re-supplying image URLs — you will **not** wipe images that were set in the builder or a previous rich publish.
+
+To **replace** an offer image, publish an object line with the same `title` and a new `offerImageUrl`.
+
+#### Example payload (Good Cookie — real image URLs)
+
+Use this shape when publishing a local business with products and photos. Image URLs below are live Firebase Storage assets for the `good-cookie` demo — copy the structure, replace URLs with images from the business site you are publishing.
+
+```json
+{
+  "$schema": "https://web4page.org/spec/v1",
+  "entity": {
+    "name": "Good Cookie",
+    "type": "business",
+    "slug": "good-cookie",
+    "description": "Handcrafted gourmet cookies baked in small batches and sold fresh every Saturday at the Downtown Farmers Market, Stall #42.",
+    "url": "https://cookie-market-online--gridnetai.replit.app",
+    "location": { "city": "Portland", "state": "OR", "country": "US" }
+  },
+  "read": {
+    "grounding": "Good Cookie bakes handcrafted gourmet cookies in small batches with European-style butter and 48-hour cold-rested dough. Known for brown butter sea salt, tahini chocolate chunk, and mix-and-match boxes at Downtown Market, Stall #42 every Saturday.",
+    "keywords": [
+      "gourmet cookies",
+      "farmers market",
+      "brown butter cookie",
+      "custom cookie orders",
+      "Portland"
+    ],
+    "products": [
+      {
+        "title": "Brown Butter Sea Salt Cookie",
+        "price": "$4",
+        "description": "Crispy edges, chewy center, pools of chocolate and a sprinkle of sea salt.",
+        "offerImageUrl": "https://firebasestorage.googleapis.com/v0/b/bigsearch-fd03f.firebasestorage.app/o/merchant-media%2FGbTAdsWoIHcWrko2ENndxjczPpk2%2Fgood-cookie-1782316916998-offer-1.jpg?alt=media&token=21d04cc3-eae7-4f4e-a863-ba072a99b4f8"
+      },
+      {
+        "title": "Tahini Chocolate Chunk Cookie",
+        "price": "$4.50",
+        "description": "Rich tahini and dark chocolate chunks with toasted sugar depth.",
+        "offerImageUrl": "https://firebasestorage.googleapis.com/v0/b/bigsearch-fd03f.firebasestorage.app/o/merchant-media%2FGbTAdsWoIHcWrko2ENndxjczPpk2%2Fgood-cookie-1782316916998-offer-3.jpg?alt=media&token=6c02894e-a7f8-4511-95ee-318102785b49"
+      },
+      {
+        "title": "Raspberry Rye Cookie",
+        "price": "$4.50",
+        "description": "Tart raspberry jam folded into nutty rye dough — a farmers market favorite.",
+        "offerImageUrl": "https://firebasestorage.googleapis.com/v0/b/bigsearch-fd03f.firebasestorage.app/o/merchant-media%2FGbTAdsWoIHcWrko2ENndxjczPpk2%2Fgood-cookie-1782316916998-offer-2.jpg?alt=media&token=b6a5a729-94c7-4ac0-8dbf-fedd43a50479"
+      }
+    ],
+    "services": [
+      {
+        "title": "Farmers Market Cookie Sales",
+        "description": "Every Saturday 8am–1pm, Downtown Market Stall #42.",
+        "offerImageUrl": "https://firebasestorage.googleapis.com/v0/b/bigsearch-fd03f.firebasestorage.app/o/merchant-media%2FGbTAdsWoIHcWrko2ENndxjczPpk2%2Fgood-cookie-1782316916998-gallery-3.jpg?alt=media&token=aed5fa47-e839-4cbe-a40d-a56066198c3e"
+      }
+    ]
+  },
+  "media": {
+    "coverImageUrl": "https://firebasestorage.googleapis.com/v0/b/bigsearch-fd03f.firebasestorage.app/o/merchant-media%2FGbTAdsWoIHcWrko2ENndxjczPpk2%2Fgood-cookie-1782316916998-cover.jpg?alt=media&token=b073484f-cfbb-448e-9c4e-62640ea2a148",
+    "logoImageUrl": "https://firebasestorage.googleapis.com/v0/b/bigsearch-fd03f.firebasestorage.app/o/merchant-media%2FGbTAdsWoIHcWrko2ENndxjczPpk2%2Fgood-cookie-1782316916998-logo.jpg?alt=media&token=74dde1c0-012b-4b31-90ec-f80422f6c509",
+    "galleryImageUrls": [
+      "https://firebasestorage.googleapis.com/v0/b/bigsearch-fd03f.firebasestorage.app/o/merchant-media%2FGbTAdsWoIHcWrko2ENndxjczPpk2%2Fgood-cookie-1782316916998-gallery-1.jpg?alt=media&token=7d9abf8a-e581-4df9-813c-47eac18c1e24",
+      "https://firebasestorage.googleapis.com/v0/b/bigsearch-fd03f.firebasestorage.app/o/merchant-media%2FGbTAdsWoIHcWrko2ENndxjczPpk2%2Fgood-cookie-1782316916998-gallery-2.jpg?alt=media&token=43ff04c8-355c-46e8-a4fc-0170be1c2ad3",
+      "https://firebasestorage.googleapis.com/v0/b/bigsearch-fd03f.firebasestorage.app/o/merchant-media%2FGbTAdsWoIHcWrko2ENndxjczPpk2%2Fgood-cookie-1782316916998-gallery-3.jpg?alt=media&token=aed5fa47-e839-4cbe-a40d-a56066198c3e"
+    ]
+  },
+  "discover": { "crawl_permissions": ["*"] }
+}
+```
+
+After `bigsearch publish`, verify the **styled** human page (not only `llms.txt`):
+
+```bash
+curl -I "https://bigsearchai.com/irl/good-cookie"
+open "https://bigsearchai.com/irl/good-cookie"
+```
+
+You should see cover, gallery, and offer images on `/irl/{slug}`. Machine surfaces (`/llms.txt`, `/mcp.json`, `/openapi.json`) remain separate paths.
+
+**Do not skip images** when the business site has usable photos — text-only publish is an incomplete owner outcome.
 
 ### 4. Auth — API key first (required in Replit, Cursor agents, CI)
 
@@ -240,6 +350,7 @@ openapi.json — merchant read API
 Merchant API — live data endpoint (https://bigsearchai.com/api/v1/merchants/{slug})
 ```
 
+- Styled Web 4.0 page at `/irl/{slug}` includes cover + offer images when `media` and `offerImageUrl` are set in web4page.json (no builder required)
 - Row in Big Search index (eligible for bigsearchai.com/search results)
 
 ### AI models (days–weeks)
@@ -280,3 +391,6 @@ Set `BIGSEARCH_API_KEY` in Cursor MCP env before invoking tools.
 | `No BIGSEARCH_API_KEY found` | Key not in env or config | Open [bigsearchai.com/api](https://bigsearchai.com/api), Start building, then Developer tab |
 | `invalid_api_key` | Key revoked or wrong | Generate new key or re-run login |
 | `API key limit reached` | Plan limit | Revoke unused keys in Account → Developer |
+| `/irl/{slug}` is text-only, no images | `web4page.json` missing `media` and offer `offerImageUrl` | Re-read site; add `media.coverImageUrl`, `galleryImageUrls`, and per-offer `offerImageUrl`; republish |
+| `/irl/{slug}` shows raw HTML footer (“Machine endpoints: llms.txt…”) on phone | Server served bot lean HTML; hard-refresh or private tab | If persists, check JS console on device |
+| Republish removed offer images | Published object lines with empty `offerImageUrl` overriding titles | Use string-only lines to preserve images, or set new `offerImageUrl` explicitly |
