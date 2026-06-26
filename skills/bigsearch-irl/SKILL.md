@@ -382,6 +382,68 @@ Set `BIGSEARCH_API_KEY` in Cursor MCP env before invoking tools.
 
 ---
 
+## Platform builder (vertical SaaS)
+
+Build a directory or vertical SaaS (e.g. Angie’s List for plumbing) with **one developer API key**. End customers never need Big Search accounts.
+
+- Human landing: [bigsearchai.com/platform](https://bigsearchai.com/platform)
+- Ops console (optional): [bigsearchai.com/partner](https://bigsearchai.com/partner) — Joe builds his own app UI; do not embed this console.
+- API key: Account → Developer → Generate key → `BIGSEARCH_API_KEY`
+- Business plan: 20 IRL tenant slots; promo codes at Stripe Checkout (e.g. partner beta)
+
+Tag each end customer on publish:
+
+```
+X-Partner-Customer-Id: {your_tenant_id}
+```
+
+### Publish tenant
+
+```bash
+curl -sS -X POST -H "Authorization: Bearer $BIGSEARCH_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "X-Partner-Customer-Id: your_customer_id" \
+  "https://bigsearchai.com/api/v1/irl/publish" -d @web4page.json
+```
+
+### List pages
+
+```bash
+curl -sS -H "Authorization: Bearer $BIGSEARCH_API_KEY" \
+  "https://bigsearchai.com/api/scratch/partner?action=pages"
+```
+
+### Per-page AI marketing metrics (embed in your app)
+
+```bash
+curl -sS -H "Authorization: Bearer $BIGSEARCH_API_KEY" \
+  "https://bigsearchai.com/api/scratch/partner?action=metrics&slugOrUrl=your-slug&periodDays=30"
+```
+
+### Audience metrics (all tenants)
+
+```bash
+curl -sS -H "Authorization: Bearer $BIGSEARCH_API_KEY" \
+  "https://bigsearchai.com/api/scratch/partner?action=audience-metrics&periodDays=30"
+```
+
+### Unpublish churned tenant
+
+```bash
+curl -sS -X POST -H "Authorization: Bearer $BIGSEARCH_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"partnerCustomerId":"your_customer_id"}' \
+  "https://bigsearchai.com/api/scratch/partner?action=draft-customer-pages"
+```
+
+### Limits
+
+IRL slots: Free 0, Air 1, Pro 3, Pro Max 10, Business 20. API keys: 3 (Free/Air) or 10 (Pro+). Hits are crawler-driven (hours–days). Readiness score 0–100.
+
+Owner outcomes: **Big Search index** (not “merchant index”). Web 4.0 page `/irl/{slug}`; Traditional Web `/b/{slug}`.
+
+---
+
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
