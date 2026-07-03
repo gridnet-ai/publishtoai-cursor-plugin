@@ -1,20 +1,21 @@
 {
   "name": "bigsearch-cursor-plugin",
   "private": true,
-  "description": "BigSearch AI CLI, MCP server, and Cursor plugin",
+  "description": "PublishToAI CLI, MCP server, and Cursor plugin",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gridnet-ai/bigsearch-cursor-plugin.git"
+    "url": "git+https://github.com/gridnet-ai/publishtoai-cursor-plugin.git"
   },
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w @bigsearch/web4page-spec && npm run build -w @bigsearch/cli && npm run build -w @bigsearch/mcp",
+    "build": "npm run build -w @bigsearch/web4page-spec && npm run build -w @bigsearch/cli && npm run build -w @bigsearch/mcp && npm run build -w @publishtoai/cli && npm run build -w publishtoai",
     "build:spec": "npm run build -w @bigsearch/web4page-spec",
     "build:cli": "npm run build -w @bigsearch/web4page-spec && npm run build -w @bigsearch/cli",
-    "build:mcp": "npm run build -w @bigsearch/mcp"
+    "build:mcp": "npm run build -w @bigsearch/mcp",
+    "build:publishtoai": "npm run build -w @bigsearch/web4page-spec && npm run build -w @publishtoai/cli && npm run build -w publishtoai"
   },
   "engines": {
     "node": ">=18"

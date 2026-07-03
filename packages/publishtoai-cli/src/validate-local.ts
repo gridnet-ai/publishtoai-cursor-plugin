@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { Web4PageSchema, calculateEntityScore, getVcap } from '@bigsearch/cli/web4page-spec';
+import { Web4PageSchema, calculateEntityScore, getVcap } from '@publishtoai/cli/web4page-spec';
 
 export type ValidateResult = {
   valid: boolean;

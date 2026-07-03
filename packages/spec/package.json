@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gridnet-ai/bigsearch-cursor-plugin.git",
+    "url": "git+https://github.com/gridnet-ai/publishtoai-cursor-plugin.git",
     "directory": "packages/spec"
   },
   "files": ["dist", "schema.json"],

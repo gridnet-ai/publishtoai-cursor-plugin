@@ -1,11 +1,11 @@
 {
-  "name": "bigsearch-ai",
-  "description": "Make every site AI-visible. Publish to BigSearch from Cursor.",
+  "name": "publishtoai",
+  "description": "Publish to AI from Cursor — Web 4.0 pages on Big Search",
   "version": "1.0.0",
   "author": {
     "name": "GridNet AI"
   },
   "license": "MIT",
-  "keywords": ["bigsearch", "ai-search", "irl", "web4page", "indexing"],
+  "keywords": ["publishtoai", "publish to ai", "ai-search", "irl", "web4page"],
   "mcpServers": "mcp.json"
 }

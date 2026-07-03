@@ -56,10 +56,10 @@ export async function runDeviceLogin(): Promise<string> {
   if (!device?.device_code) {
     throw new Error(`Device auth failed (HTTP ${deviceRes.status})`);
   }
-  const verifyUrl = `${device.verification_uri}?code=${encodeURIComponent(device.user_code)}&source=cli`;
+  const verifyUrl = `${device.verification_uri}?code=${encodeURIComponent(device.user_code)}&source=publishtoai`;
 
   console.log('');
-  console.log(chalk.bold('Authorize BigSearch CLI'));
+  console.log(chalk.bold('Authorize PublishToAI CLI'));
   console.log('');
   console.log(`  1. Open ${chalk.cyan(verifyUrl)}`);
   console.log(`  2. Enter code: ${chalk.yellow(device.user_code)}`);
@@ -87,26 +87,26 @@ export async function runDeviceLogin(): Promise<string> {
     if (token.reused) {
       const existing = requireApiKey();
       if (existing) {
-        spinner.succeed('Authorized — using existing ~/.bigsearch/config.json key');
+        spinner.succeed('Authorized — using existing ~/.publishtoai/config.json key');
         return existing;
       }
       spinner.fail('Session approved but no local API key found');
-      throw new Error('Run bigsearch login after saving a key, or revoke old CLI keys and retry.');
+      throw new Error('Run publishtoai login after saving a key, or revoke old CLI keys and retry.');
     }
     if (token.api_key) {
       saveConfigFile({ apiKey: token.api_key });
-      spinner.succeed('Authorized — API key saved to ~/.bigsearch/config.json');
+      spinner.succeed('Authorized — API key saved to ~/.publishtoai/config.json');
       return token.api_key;
     }
 
     if (token.error === 'expired_token') {
       spinner.fail('Authorization code expired');
-      throw new Error('Login expired. Run bigsearch login again.');
+      throw new Error('Login expired. Run publishtoai login again.');
     }
   }
 
   spinner.fail('Authorization timed out');
-  throw new Error('Login timed out. Run bigsearch login again.');
+  throw new Error('Login timed out. Run publishtoai login again.');
 }
 
 export async function ensureAuthenticated(): Promise<string> {

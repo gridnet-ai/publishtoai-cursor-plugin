@@ -1,11 +1,5 @@
-# @bigsearch/cli
+# @bigsearch/cli (deprecated)
 
-Terminal CLI for the BigSearch AI IRL index.
+**Use [`npx publishtoai`](https://www.npmjs.com/package/publishtoai) or [`@publishtoai/cli`](https://www.npmjs.com/package/@publishtoai/cli) instead.**
 
-```bash
-npm install -g @bigsearch/cli
-export BIGSEARCH_API_KEY=your-key
-bigsearch publish
-```
-
-See the [repo README](../../README.md) for full documentation.
+This package is a thin deprecation shim that forwards to `@publishtoai/cli`. Same Big Search registry and API.

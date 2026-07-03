@@ -77,7 +77,7 @@ export async function runVerifySecure(options: {
 
     if (status === 401 || status === 403) die('API key invalid or expired.');
     if (status === 412) {
-      die('Publish your IRL first. Run: bigsearch publish');
+      die('Publish your IRL first. Run: publishtoai publish');
     }
     if (status >= 400 && !data.verified) {
       die(data.message ?? data.error ?? 'Verification failed');

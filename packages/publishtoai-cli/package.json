@@ -1,0 +1,62 @@
+{
+  "name": "@publishtoai/cli",
+  "version": "1.0.0",
+  "description": "Publish to AI — CLI for the Big Search IRL registry (npx publishtoai)",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gridnet-ai/publishtoai-cursor-plugin.git",
+    "directory": "packages/publishtoai-cli"
+  },
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "publishtoai": "dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./web4page-spec": {
+      "types": "./dist/web4page-spec/index.d.ts",
+      "import": "./dist/web4page-spec/index.js",
+      "require": "./dist/web4page-spec/index.js",
+      "default": "./dist/web4page-spec/index.js"
+    },
+    "./web4page-spec/schema.json": "./dist/web4page-spec-schema.json"
+  },
+  "scripts": {
+    "build": "node scripts/copy-spec.cjs && tsc",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "ora": "^8.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "publishtoai",
+    "ai",
+    "cli",
+    "publish",
+    "irl",
+    "web4page"
+  ]
+}

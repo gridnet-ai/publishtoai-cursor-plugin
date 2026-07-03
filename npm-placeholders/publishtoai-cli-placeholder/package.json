@@ -1,0 +1,15 @@
+{
+  "name": "@publishtoai/cli",
+  "version": "0.0.1",
+  "description": "Publish to AI — CLI wrapper (placeholder; full release coming soon)",
+  "license": "MIT",
+  "publishConfig": { "access": "public" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gridnet-ai/publishtoai-cursor-plugin.git",
+    "directory": "packages/publishtoai-cli"
+  },
+  "bin": { "publishtoai": "bin.js" },
+  "engines": { "node": ">=18" },
+  "keywords": ["publishtoai", "ai", "cli", "publish"]
+}

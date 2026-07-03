@@ -1,0 +1,13 @@
+{
+  "name": "publishtoai",
+  "version": "0.0.1",
+  "description": "Publish to AI — npx publishtoai (placeholder; full release coming soon)",
+  "license": "MIT",
+  "publishConfig": { "access": "public" },
+  "bin": { "publishtoai": "bin.js" },
+  "dependencies": {
+    "@publishtoai/cli": "0.0.1"
+  },
+  "engines": { "node": ">=18" },
+  "keywords": ["publishtoai", "ai", "cli", "publish"]
+}

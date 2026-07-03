@@ -10,7 +10,7 @@ export type BigsearchConfig = {
 };
 
 export function configFilePath(): string {
-  return path.join(os.homedir(), '.bigsearch', 'config.json');
+  return path.join(os.homedir(), '.publishtoai', 'config.json');
 }
 
 export function loadConfigFile(): BigsearchConfig | null {
@@ -59,7 +59,7 @@ export function requireApiKey(): string {
 export function exitMissingApiKey(): never {
   console.error('No BIGSEARCH_API_KEY found.');
   console.error('');
-  console.error('  Run: bigsearch login');
+  console.error('  Run: publishtoai login');
   console.error('  Or set BIGSEARCH_API_KEY for CI/scripts.');
   console.error('');
   console.error('  Manual keys: https://bigsearchai.com/account (API Keys tab)');
